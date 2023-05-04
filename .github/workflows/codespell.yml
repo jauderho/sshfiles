@@ -1,0 +1,47 @@
+name: Codespell
+
+# Documentation:
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+
+# Start the job on all push #
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+#concurrency:
+#  group: ${{ github.workflow }}
+#  cancel-in-progress: true
+
+permissions: read-all
+
+# Set the Job #
+jobs:
+  build:
+    name: Codespell
+    # Set the agent to run on
+    runs-on: ubuntu-22.04
+
+    # Load all steps #
+    steps:
+      # Checkout the code base #
+      - name: Harden Runner
+        uses: step-security/harden-runner@6b3083af2869dc3314a0257a42f4af696cc79ba3 # v1
+        with:
+          egress-policy: block
+          disable-telemetry: true
+          allowed-endpoints: 
+            github.com:443
+          
+      - name: Checkout Code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v2.4.0
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+
+      # Run Linter against code base #
+      - name: Codespell
+        uses: codespell-project/actions-codespell@22ff5a2e4b591290baf82d47c9feadac31c65441 # master
+        with:
+          check_filenames: true
+          ignore_words_file: .codespellignore
